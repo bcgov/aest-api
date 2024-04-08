@@ -66,7 +66,7 @@ build-api:
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(BC_NAME) --wait
 	@echo "+\n++ FINISHED BUILDING API\n+"
 
-deploy-web:
+deploy-api:
 	@echo "+\n++ START DEPLOYING API\n+"
 	test -n "$(DEPLOY_NAMESPACE)"
 	test -n "$(BUILD_NAMESPACE)"
