@@ -15,7 +15,7 @@ export DEPLOY_FILE := $(or $(DEPLOY_FILE), dc_latest.yaml)
 export BUILD_TAG := $(or $(BUILD_TAG), latest)
 
 define PARAM_FILE
-".env"
+"api.env"
 endef
 
 #define general variables
