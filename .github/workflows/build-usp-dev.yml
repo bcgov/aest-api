@@ -53,7 +53,7 @@ jobs:
       - name: OC Build from yaml
         working-directory: "./openshift"
         run: |
-          make oc-build-web
+          make oc-build-api
       - name: Finished OC Build from yaml
         run: |
           echo "FINISHED OC BUILD API"
