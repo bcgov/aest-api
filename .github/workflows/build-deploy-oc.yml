@@ -2,7 +2,7 @@ name: Build and Deploy API in TEST
 
 on:
   pull_request:
-    branches: [ ups_dev ]
+    #branches: [ ups_dev ]
     types: [ closed ]
 jobs:
   # Print variables for logging and debugging purposes
@@ -27,19 +27,12 @@ jobs:
       cancel-in-progress: true
     env:
       BUILD_ID: ${{ github.event.number }}
-      NAMESPACE: fc0a26-dev
-      BUILD_NAMESPACE: fc0a26-tools
       BUILD_REF: ${{ github.base_ref }}
-      HOST_PREFIX: usp
-      SOURCE_REPOSITORY_BRANCH: dev
-      LICENSE_PLATE: fc0a26
-      OC_USER_ID: 1009370000
     steps:
       # Checkout the PR branch
       - name: Print env
         run: |
           echo BUILD ID: $BUILD_ID
-          echo BUILD NAMESPACE: $BUILD_NAMESPACE
           echo BRANCH: $BUILD_REF
       - name: Checkout Target Branch
         uses: actions/checkout@v4
@@ -67,22 +60,12 @@ jobs:
       - build
     env:
       BUILD_ID: ${{ github.event.number }}
-      NAMESPACE: fc0a26-dev
-      BUILD_NAMESPACE: fc0a26-tools
       BUILD_REF: ${{ github.base_ref }}
-      HOST_PREFIX: usp
-      SOURCE_REPOSITORY_BRANCH: dev
-      LICENSE_PLATE: fc0a26
-      OC_USER_ID: 1009370000
     steps:
       - name: Print env
         run: |
           echo BUILD ID: $BUILD_ID
-          echo BUILD NAMESPACE: $BUILD_NAMESPACE
-          echo NAMESPACE: $NAMESPACE
           echo BRANCH: $BUILD_REF
-          echo HOST_PREFIX: $HOST_PREFIX
-          echo SOURCE_REPOSITORY_BRANCH: $SOURCE_REPOSITORY_BRANCH
       # Checkout the PR branch
       - name: Checkout Target Branch
         uses: actions/checkout@v4
@@ -96,7 +79,7 @@ jobs:
       - name: Deploy API DEV
         working-directory: "./openshift"
         run: |
-          make oc-deploy-web
+          make oc-deploy-api
       - name: Finished OC Deploy from yaml
         run: |
           echo "FINISHED OC Deploy DEV API"
