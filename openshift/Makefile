@@ -54,7 +54,6 @@ print-status:
 	@echo " | REPO_BRANCH:						$(SOURCE_REPOSITORY_BRANCH) |"
 	@echo " | OC_USER_ID: 					$(OC_USER_ID) |"
 	@echo " | PARAM_FILE: 					$(PARAM_FILE) |"
-	@echo " | PARAM_FILE: 					$(PARAM_FILE) |"
 	@echo " | LICENSE_PLATE: 				$(LICENSE_PLATE) |"
 
 	@echo " +---------------------------------------------------------+ "
