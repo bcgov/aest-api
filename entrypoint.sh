@@ -16,15 +16,12 @@ fi
 if [ -f /vault/secrets/test-secrets.env ]; then
     touch .env && cp -rf /vault/secrets/test-secrets.env /var/www/html/.env
 fi
-echo "ENV_ARG: ${ENV_ARG}"
 
 echo "Install composer"
 composer dump-auto
 
 chmod 766 /var/www/html/probe-check.sh
 
-echo "Permissions setup for NPM:"
-chmod -R a+w node_modules
 
 echo "Starting apache:"
 /usr/sbin/apache2ctl start
