@@ -113,7 +113,7 @@ objects:
   - apiVersion: route.openshift.io/v1
     kind: Route
     spec:
-      host: ${NAME}-${NAMESPACE}.apps.silver.devops.gov.bc.ca
+      host: ${DEPLOY_NAMESPACE}.apps.silver.devops.gov.bc.ca
       port:
         targetPort: 8080-tcp
       to:
@@ -169,6 +169,9 @@ parameters:
   - name: VAULT_ENV
     required: true
   - name: BUILD_NAMESPACE
+    required: true
+    description: some line to describe the image_tag_x parameter
+  - name: DEPLOY_NAMESPACE
     required: true
     description: some line to describe the image_tag_x parameter
   - name: REPO_BRANCH
