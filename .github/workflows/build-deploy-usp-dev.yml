@@ -2,7 +2,7 @@ name: Build and Deploy API in TEST
 
 on:
   pull_request:
-    #branches: [ ups_dev ]
+    branches: [ usp_dev ]
     types: [ closed ]
 jobs:
   # Print variables for logging and debugging purposes
@@ -28,6 +28,7 @@ jobs:
     env:
       BUILD_ID: ${{ github.event.number }}
       BUILD_REF: ${{ github.base_ref }}
+      BUILD_NAMESPACE: fc0a26-tools
     steps:
       # Checkout the PR branch
       - name: Print env
@@ -61,6 +62,7 @@ jobs:
     env:
       BUILD_ID: ${{ github.event.number }}
       BUILD_REF: ${{ github.base_ref }}
+      DEPLOY_NAMESPACE: fc0a26-dev
     steps:
       - name: Print env
         run: |

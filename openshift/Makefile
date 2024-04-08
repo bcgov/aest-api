@@ -44,7 +44,6 @@ print-status:
 	@echo " +---------------------------------------------------------+ "
 	@echo " | PROJECT:	  			$(APP_NAME)"
 	@echo " | BRANCH:	   			$(BUILD_REF)"
-	@echo " | NAMESPACE:					$(NAMESPACE)"
 	@echo " | BUILD_NAMESPACE:				$(BUILD_NAMESPACE)"
 	@echo " | GIT_LOCAL_BRANCH:				$(GIT_LOCAL_BRANCH)"
 	@echo " +---------------------------------------------------------+ "
@@ -71,7 +70,7 @@ deploy-web:
 	@echo "+\n++ START DEPLOYING API\n+"
 	test -n "$(DEPLOY_NAMESPACE)"
 	test -n "$(BUILD_NAMESPACE)"
-	@echo "+\n++ Deploying API into $(NAMESPACE)\n+"
+	@echo "+\n++ Deploying API into $(DEPLOY_NAMESPACE)\n+"
 	@oc -n $(DEPLOY_NAMESPACE) process -f $(DEPLOY_FILE) --param-file=$(PARAM_FILE) | oc -n $(DEPLOY_NAMESPACE) apply -f -
 	$(call rollout_and_wait,dc/$(BC_NAME))
 	@echo "+\n++ FINISHED Deploying API\n+"
