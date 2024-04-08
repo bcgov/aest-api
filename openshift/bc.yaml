@@ -9,7 +9,6 @@ objects:
   - apiVersion: v1
     kind: BuildConfig
     spec:
-      serviceAccountName: ${LICENSE_PLATE}-vault
       failedBuildsHistoryLimit: 5
       nodeSelector: null
       output:
@@ -45,19 +44,6 @@ objects:
         build-branch: ${REPO_BRANCH}
       name: ${NAME}
       namespace: ${BUILD_NAMESPACE}
-      annotations:
-        vault.hashicorp.com/agent-inject: 'true'
-        vault.hashicorp.com/agent-inject-secret-helloworld: ${LICENSE_PLATE}-${LICENSE_BRANCH}/helloworld
-        vault.hashicorp.com/agent-inject-template-helloworld: |
-          {{- with secret "${LICENSE_PLATE}-${LICENSE_BRANCH}/helloworld" }}
-          export dev_database_host="{{ .Data.data.dev_database_host }}"
-          export dev_database_name="{{ .Data.data.dev_database_name }}"
-          {{- end }}
-        vault.hashicorp.com/agent-inject-token: 'true'
-        vault.hashicorp.com/agent-pre-populate-only: 'true'
-        vault.hashicorp.com/auth-path: auth/k8s-silver
-        vault.hashicorp.com/namespace: platform-services
-        vault.hashicorp.com/role: ${LICENSE_PLATE}-nonprod
   - apiVersion: v1
     kind: ImageStream
     spec:
@@ -122,4 +108,6 @@ parameters:
   - name: MEM_LIMITS
     required: false
   - name: VAULT_ENV
+    required: false
+  - name: DEPLOY_NAMESPACE
     required: false

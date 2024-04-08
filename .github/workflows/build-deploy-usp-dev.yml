@@ -2,7 +2,7 @@ name: Build and Deploy API in TEST
 
 on:
   pull_request:
-    branches: [ test ]
+    branches: [ usp_dev ]
     types: [ closed ]
 jobs:
   # Print variables for logging and debugging purposes
@@ -18,7 +18,6 @@ jobs:
         echo Git Ref Name: ${{ github.ref_name }}
         echo OC CLI Version: $(oc version)
 
-
   # Build API
   build:
     name: Build project
@@ -28,17 +27,13 @@ jobs:
       cancel-in-progress: true
     env:
       BUILD_ID: ${{ github.event.number }}
-      NAMESPACE: fc0a26-test
-      BUILD_NAMESPACE: fc0a26-tools
       BUILD_REF: ${{ github.base_ref }}
-      HOST_PREFIX: api
-      SOURCE_REPOSITORY_BRANCH: test
+      BUILD_NAMESPACE: fc0a26-tools
     steps:
       # Checkout the PR branch
       - name: Print env
         run: |
           echo BUILD ID: $BUILD_ID
-          echo BUILD NAMESPACE: $BUILD_NAMESPACE
           echo BRANCH: $BUILD_REF
       - name: Checkout Target Branch
         uses: actions/checkout@v4
@@ -52,35 +47,27 @@ jobs:
       - name: OC Build from yaml
         working-directory: "./openshift"
         run: |
-          make oc-build-web
+          make oc-build-api
       - name: Finished OC Build from yaml
         run: |
           echo "FINISHED OC BUILD API"
           echo ++++++++++
 
   # Deploy project
-  deployTest:
-    name: Deploy Project to TEST
+  deploy:
+    name: Deploy Project
     runs-on: ubuntu-latest
-    if: github.ref_name == 'test'
     needs:
       - build
     env:
       BUILD_ID: ${{ github.event.number }}
-      NAMESPACE: fc0a26-test
-      BUILD_NAMESPACE: fc0a26-tools
       BUILD_REF: ${{ github.base_ref }}
-      HOST_PREFIX: aest-api
-      SOURCE_REPOSITORY_BRANCH: test
+      DEPLOY_NAMESPACE: fc0a26-dev
     steps:
       - name: Print env
         run: |
           echo BUILD ID: $BUILD_ID
-          echo BUILD NAMESPACE: $BUILD_NAMESPACE
-          echo NAMESPACE: $NAMESPACE
           echo BRANCH: $BUILD_REF
-          echo HOST_PREFIX: $HOST_PREFIX
-          echo SOURCE_REPOSITORY_BRANCH: $SOURCE_REPOSITORY_BRANCH
       # Checkout the PR branch
       - name: Checkout Target Branch
         uses: actions/checkout@v4
@@ -91,11 +78,11 @@ jobs:
         run: |
           oc login --token=${{ secrets.AEST_API_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
       # Deploy the API.
-      - name: Deploy API Test
+      - name: Deploy API DEV
         working-directory: "./openshift"
         run: |
-          make oc-deploy-web
+          make oc-deploy-api
       - name: Finished OC Deploy from yaml
         run: |
-          echo "FINISHED OC Deploy TEST API"
+          echo "FINISHED OC Deploy DEV API"
           echo ++++++++++

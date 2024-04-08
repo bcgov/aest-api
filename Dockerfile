@@ -90,14 +90,6 @@ RUN a2enmod remoteip \
   && a2enmod rewrite headers
 
 
-
-# Install NPM
-RUN apt-get install -y ca-certificates gnupg \
-    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    NODE_MAJOR=20 \
-    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
-    apt-get update && apt-get install nodejs -y && apt-get install -y npm
-
 RUN apt-get autoclean && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* \
 #fix Action '-D FOREGROUND' failed.
     && a2enmod lbmethod_byrequests \
@@ -148,7 +140,6 @@ RUN mkdir -p storage && mkdir -p bootstrap/cache && chmod -R ug+rwx storage boot
     && chmod 764 /var/www/html/artisan \
 #Error: EACCES: permission denied, open '/var/www/html/public/mix-manifest.json' \
     && cd /var/www/html/public && chmod 766 mix-manifest.json \
-    && mkdir /.npm && mkdir /.npm/_cache && chown -R ${USER_ID}:0 "/.npm" \
 #Writing to directory /.config/psysh is not allowed.
     && mkdir -p /.config/psysh && chown -R ${USER_ID}:root /.config && chmod -R 755 /.config \
     && mkdir -p /.composer && chown -R ${USER_ID}:root /.composer && chmod -R 755 /.composer \
@@ -163,7 +154,7 @@ USER ${USER_ID}
 #rm -rf vendor
 #rm -f composer.lock
 #composer install
-RUN composer install && npm install --prefix /var/www/html/ && npm run --prefix /var/www/html/ prod
+RUN composer install
 
 ENTRYPOINT ["/sbin/entrypoint.sh"]
 # Start!
