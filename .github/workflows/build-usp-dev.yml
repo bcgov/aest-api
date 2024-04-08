@@ -2,7 +2,7 @@ name: Build and Deploy API in TEST
 
 on:
   pull_request:
-    branches: [ test ]
+    branches: [ ups_dev ]
     types: [ closed ]
 jobs:
   # Print variables for logging and debugging purposes
@@ -18,7 +18,6 @@ jobs:
         echo Git Ref Name: ${{ github.ref_name }}
         echo OC CLI Version: $(oc version)
 
-
   # Build API
   build:
     name: Build project
@@ -28,11 +27,13 @@ jobs:
       cancel-in-progress: true
     env:
       BUILD_ID: ${{ github.event.number }}
-      NAMESPACE: fc0a26-test
+      NAMESPACE: fc0a26-dev
       BUILD_NAMESPACE: fc0a26-tools
       BUILD_REF: ${{ github.base_ref }}
-      HOST_PREFIX: api
-      SOURCE_REPOSITORY_BRANCH: test
+      HOST_PREFIX: usp
+      SOURCE_REPOSITORY_BRANCH: dev
+      LICENSE_PLATE: fc0a26
+      OC_USER_ID: 1009370000
     steps:
       # Checkout the PR branch
       - name: Print env
@@ -59,19 +60,20 @@ jobs:
           echo ++++++++++
 
   # Deploy project
-  deployTest:
-    name: Deploy Project to TEST
+  deploy:
+    name: Deploy Project
     runs-on: ubuntu-latest
-    if: github.ref_name == 'test'
     needs:
       - build
     env:
       BUILD_ID: ${{ github.event.number }}
-      NAMESPACE: fc0a26-test
+      NAMESPACE: fc0a26-dev
       BUILD_NAMESPACE: fc0a26-tools
       BUILD_REF: ${{ github.base_ref }}
-      HOST_PREFIX: aest-api
-      SOURCE_REPOSITORY_BRANCH: test
+      HOST_PREFIX: usp
+      SOURCE_REPOSITORY_BRANCH: dev
+      LICENSE_PLATE: fc0a26
+      OC_USER_ID: 1009370000
     steps:
       - name: Print env
         run: |
@@ -91,11 +93,11 @@ jobs:
         run: |
           oc login --token=${{ secrets.AEST_API_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
       # Deploy the API.
-      - name: Deploy API Test
+      - name: Deploy API DEV
         working-directory: "./openshift"
         run: |
           make oc-deploy-web
       - name: Finished OC Deploy from yaml
         run: |
-          echo "FINISHED OC Deploy TEST API"
+          echo "FINISHED OC Deploy DEV API"
           echo ++++++++++

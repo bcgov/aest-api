@@ -1,67 +1,27 @@
 ## get values from Github actions yml file. under env
 export GIT_LOCAL_BRANCH?=$(shell git rev-parse --abbrev-ref HEAD)
-export NAMESPACE := $(or $(NAMESPACE), fc0a26-dev)
+export NAMESPACE := $(or $(NAMESPACE), 000000-dev)
 export APP_NAME := $(or $(PROJECT_NAME), aest-api)
 export BUILD_ID := $(or $(BUILD_ID), 1)
 export BUILD_REF := $(or $(BUILD_REF), $(GIT_LOCAL_BRANCH))
-export LICENSE_PLATE := $(or $(LICENSE_PLATE), fc0a26)
+export LICENSE_PLATE := $(or $(LICENSE_PLATE), 000000)
 export LICENSE_BRANCH := $(or $(LICENSE_BRANCH), nonprod)
-export BUILD_NAMESPACE := $(or $(BUILD_NAMESPACE), fc0a26-tools)
+export BUILD_NAMESPACE := $(or $(BUILD_NAMESPACE), 000000-tools)
 export DOMAIN := $(or $(DOMAIN), apps.silver.devops.gov.bc.ca)
-export HOST_PREFIX := $(or $(HOST_PREFIX), aest-api)
+export HOST_PREFIX := $(or $(HOST_PREFIX), null)
 export SOURCE_REPOSITORY_BRANCH := $(or $(SOURCE_REPOSITORY_BRANCH), dev)
+export OC_USER_ID := $(or $(OC_USER_ID), 1000000000)
+export DEPLOY_FILE := $(or $(DEPLOY_FILE), dc_latest.yaml)
+export BUILD_TAG := $(or $(BUILD_TAG), latest)
 
-
-ifeq ($(GIT_LOCAL_BRANCH),dev)
-define DEPLOY_FILE
-"dev_dc_latest.yaml"
-endef
-define OC_USER_ID
-"1009370000"
-endef
 define PARAM_FILE
-"dev.env"
+".env"
 endef
-define BUILD_TAG
-"latest-dev"
-endef
-
-else ifeq ($(GIT_LOCAL_BRANCH),test)
-define DEPLOY_FILE
-"dc_latest.yaml"
-endef
-define OC_USER_ID
-"1004030000"
-endef
-define PARAM_FILE
-"test.env"
-endef
-define BUILD_TAG
-"latest-test"
-endef
-
-else
-define DEPLOY_FILE
-"dc_latest.yaml"
-endef
-define OC_USER_ID
-"1009380000"
-endef
-define PARAM_FILE
-"prod.env"
-endef
-define BUILD_TAG
-"latest-prod"
-endef
-endif
-
 
 #define general variables
 define LABEL_NAME
 "API"
 endef
-
-
 
 define HOST
 "$(HOST_PREFIX)-$(BUILD_NAMESPACE).apps.silver.devops.gov.bc.ca.$(DOMAIN)"
