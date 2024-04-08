@@ -12,6 +12,35 @@ export HOST_PREFIX := $(or $(HOST_PREFIX), aest-api)
 export SOURCE_REPOSITORY_BRANCH := $(or $(SOURCE_REPOSITORY_BRANCH), dev)
 
 
+ifeq ($(GIT_LOCAL_BRANCH),dev)
+define DEPLOY_FILE
+"dev_dc_latest.yaml"
+endef
+define OC_USER_ID
+"1009370000"
+endef
+define PARAM_FILE
+"dev.env"
+endef
+define BUILD_TAG
+"latest-dev"
+endef
+
+else ifeq ($(GIT_LOCAL_BRANCH),test)
+define DEPLOY_FILE
+"dc_latest.yaml"
+endef
+define OC_USER_ID
+"1004030000"
+endef
+define PARAM_FILE
+"test.env"
+endef
+define BUILD_TAG
+"latest-test"
+endef
+
+else
 define DEPLOY_FILE
 "dc_latest.yaml"
 endef
@@ -24,6 +53,7 @@ endef
 define BUILD_TAG
 "latest-prod"
 endef
+endif
 
 
 #define general variables
