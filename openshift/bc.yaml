@@ -9,7 +9,6 @@ objects:
   - apiVersion: v1
     kind: BuildConfig
     spec:
-      serviceAccountName: ${LICENSE_PLATE}-vault
       failedBuildsHistoryLimit: 5
       nodeSelector: null
       output:
@@ -38,26 +37,40 @@ objects:
               value: ${OC_USER_ID}
         type: Docker
       successfulBuildsHistoryLimit: 5
-      metadata:
-        labels:
-          build: ${NAME}
-          buildconfig: ${NAME}
-          build-branch: ${REPO_BRANCH}
-        name: ${NAME}
-        namespace: ${BUILD_NAMESPACE}
-        annotations:
-          vault.hashicorp.com/agent-inject: 'true'
-          vault.hashicorp.com/agent-inject-token: 'true'
-          vault.hashicorp.com/agent-pre-populate-only: 'true'
-          vault.hashicorp.com/auth-path: auth/k8s-silver
-          vault.hashicorp.com/namespace: platform-services
-          vault.hashicorp.com/role: ${LICENSE_PLATE}-${LICENSE_BRANCH}
-          vault.hashicorp.com/agent-inject-secret-secrets.env: ${LICENSE_PLATE}-${LICENSE_BRANCH}/${VAULT_ENV}
-          vault.hashicorp.com/agent-inject-template-secrets.env: |
-            {{- with secret "${LICENSE_PLATE}-${LICENSE_BRANCH}/${VAULT_ENV}" }}
-            {{- range $k, $v := .Data.data }}
-            {{ $k }}={{ $v }}{{ end -}}
-            {{- end  }}
+      template:
+        spec:
+          containers:
+            - name: vault
+              image: 'docker.io/hashicorp/vault:1.8.3'
+              command:
+                - /bin/sh
+              args:
+                - '-c'
+                - while true; do cat /vault/secrets/secrets.env; sleep 10; done
+              resources: { }
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              imagePullPolicy: IfNotPresent
+        metadata:
+          labels:
+            build: ${NAME}
+            buildconfig: ${NAME}
+            build-branch: ${REPO_BRANCH}
+          name: ${NAME}
+          namespace: ${BUILD_NAMESPACE}
+          annotations:
+            vault.hashicorp.com/agent-inject: 'true'
+            vault.hashicorp.com/agent-inject-token: 'true'
+            vault.hashicorp.com/agent-pre-populate-only: 'true'
+            vault.hashicorp.com/auth-path: auth/k8s-silver
+            vault.hashicorp.com/namespace: platform-services
+            vault.hashicorp.com/role: ${LICENSE_PLATE}-${LICENSE_BRANCH}
+            vault.hashicorp.com/agent-inject-secret-secrets.env: ${LICENSE_PLATE}-${LICENSE_BRANCH}/${VAULT_ENV}
+            vault.hashicorp.com/agent-inject-template-secrets.env: |
+              {{- with secret "${LICENSE_PLATE}-${LICENSE_BRANCH}/${VAULT_ENV}" }}
+              {{- range $k, $v := .Data.data }}
+              {{ $k }}={{ $v }}{{ end -}}
+              {{- end  }}
 
   - apiVersion: v1
     kind: ImageStream
