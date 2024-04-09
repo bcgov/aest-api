@@ -51,19 +51,6 @@ objects:
           labels:
             deploymentconfig: ${NAME}
             deploy-branch: ${REPO_BRANCH}
-          annotations:
-            vault.hashicorp.com/agent-inject: 'true'
-            vault.hashicorp.com/agent-inject-token: 'true'
-            vault.hashicorp.com/agent-pre-populate-only: 'true'
-            vault.hashicorp.com/auth-path: auth/k8s-silver
-            vault.hashicorp.com/namespace: platform-services
-            vault.hashicorp.com/role: ${LICENSE_PLATE}-${LICENSE_BRANCH}
-            vault.hashicorp.com/agent-inject-secret-secrets.env: ${LICENSE_PLATE}-${LICENSE_BRANCH}/${VAULT_ENV}
-            vault.hashicorp.com/agent-inject-template-secrets.env: |
-              {{- with secret "${LICENSE_PLATE}-${LICENSE_BRANCH}/${VAULT_ENV}" }}
-              {{- range $k, $v := .Data.data }}
-              {{ $k }}={{ $v }}{{ end -}}
-              {{- end  }}
         spec:
           serviceAccountName: ${LICENSE_PLATE}-vault
           volumes:
@@ -113,7 +100,7 @@ objects:
   - apiVersion: route.openshift.io/v1
     kind: Route
     spec:
-      host: ${DEPLOY_NAMESPACE}.apps.silver.devops.gov.bc.ca
+      host: aest-api.${DEPLOY_NAMESPACE}.apps.silver.devops.gov.bc.ca
       port:
         targetPort: 8080-tcp
       to:
@@ -128,6 +115,8 @@ objects:
       name: ${NAME}
       labels:
         deploymentconfig: ${NAME}
+      annotations:
+        haproxy.router.openshift.io/ip_whitelist: 142.22.0.0/12 142.32.0.0/12 142.35.0.0/12
 
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
