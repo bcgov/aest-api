@@ -9,6 +9,7 @@ objects:
   - apiVersion: v1
     kind: BuildConfig
     spec:
+      serviceAccountName: ${LICENSE_PLATE}-vault
       failedBuildsHistoryLimit: 5
       nodeSelector: null
       output:
@@ -37,18 +38,30 @@ objects:
               value: ${OC_USER_ID}
         type: Docker
       successfulBuildsHistoryLimit: 5
-    metadata:
-      labels:
-        build: ${NAME}
-        buildconfig: ${NAME}
-        build-branch: ${REPO_BRANCH}
-      name: ${NAME}
-      namespace: ${BUILD_NAMESPACE}
+      metadata:
+        labels:
+          build: ${NAME}
+          buildconfig: ${NAME}
+          build-branch: ${REPO_BRANCH}
+        name: ${NAME}
+        namespace: ${BUILD_NAMESPACE}
+        annotations:
+          vault.hashicorp.com/agent-inject: 'true'
+          vault.hashicorp.com/agent-inject-token: 'true'
+          vault.hashicorp.com/agent-pre-populate-only: 'true'
+          vault.hashicorp.com/auth-path: auth/k8s-silver
+          vault.hashicorp.com/namespace: platform-services
+          vault.hashicorp.com/role: ${LICENSE_PLATE}-${LICENSE_BRANCH}
+          vault.hashicorp.com/agent-inject-secret-secrets.env: ${LICENSE_PLATE}-${LICENSE_BRANCH}/${VAULT_ENV}
+          vault.hashicorp.com/agent-inject-template-secrets.env: |
+            {{- with secret "${LICENSE_PLATE}-${LICENSE_BRANCH}/${VAULT_ENV}" }}
+            {{- range $k, $v := .Data.data }}
+            {{ $k }}={{ $v }}{{ end -}}
+            {{- end  }}
 
   - apiVersion: v1
     kind: ImageStream
     spec:
-      serviceAccountName: ${LICENSE_PLATE}-vault
       lookupPolicy:
         local: false
     metadata:
@@ -60,20 +73,6 @@ objects:
         image-stream: ${NAME}
         image-stream-tag: ${IMAGE_TAG}
       name: ${NAME}
-      annotations:
-        vault.hashicorp.com/agent-inject: 'true'
-        vault.hashicorp.com/agent-inject-token: 'true'
-        vault.hashicorp.com/agent-pre-populate-only: 'true'
-        vault.hashicorp.com/auth-path: auth/k8s-silver
-        vault.hashicorp.com/namespace: platform-services
-        vault.hashicorp.com/role: ${LICENSE_PLATE}-${LICENSE_BRANCH}
-        vault.hashicorp.com/agent-inject-secret-secrets.env: ${LICENSE_PLATE}-${LICENSE_BRANCH}/${VAULT_ENV}
-        vault.hashicorp.com/agent-inject-template-secrets.env: |
-          {{- with secret "${LICENSE_PLATE}-${LICENSE_BRANCH}/${VAULT_ENV}" }}
-          {{- range $k, $v := .Data.data }}
-          {{ $k }}={{ $v }}{{ end -}}
-          {{- end  }}
-
 parameters:
   - name: NAME
     required: true
