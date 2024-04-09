@@ -52,7 +52,6 @@ objects:
             deploymentconfig: ${NAME}
             deploy-branch: ${REPO_BRANCH}
         spec:
-          serviceAccountName: ${LICENSE_PLATE}-vault
           volumes:
             - name: site-data-volume
               configMap:
@@ -151,8 +150,6 @@ parameters:
   - name: LICENSE_PLATE
     required: true
   - name: LICENSE_BRANCH
-    required: true
-  - name: VAULT_ENV
     required: true
   - name: BUILD_NAMESPACE
     required: true
