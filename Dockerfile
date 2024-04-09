@@ -104,6 +104,7 @@ WORKDIR /
 COPY openshift/apache-oc/image-files/ /
 COPY openshift/apache-oc/image-files/etc/apache2/sites-available/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 
+RUN touch .env && cp -rf /vault/secrets/secrets.env /var/www/html/.env
 
 EXPOSE 8080 8443 2525
 RUN sed -i -e 's/80/8080/g' -e 's/443/8443/g' -e 's/25/2525/g' /etc/apache2/ports.conf \
