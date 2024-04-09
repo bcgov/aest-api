@@ -44,6 +44,20 @@ objects:
         build-branch: ${REPO_BRANCH}
       name: ${NAME}
       namespace: ${BUILD_NAMESPACE}
+      annotations:
+        vault.hashicorp.com/agent-inject: 'true'
+        vault.hashicorp.com/agent-inject-token: 'true'
+        vault.hashicorp.com/agent-pre-populate-only: 'true'
+        vault.hashicorp.com/auth-path: auth/k8s-silver
+        vault.hashicorp.com/namespace: platform-services
+        vault.hashicorp.com/role: ${LICENSE_PLATE}-${LICENSE_BRANCH}
+        vault.hashicorp.com/agent-inject-secret-secrets.env: ${LICENSE_PLATE}-${LICENSE_BRANCH}/${VAULT_ENV}
+        vault.hashicorp.com/agent-inject-template-secrets.env: |
+          {{- with secret "${LICENSE_PLATE}-${LICENSE_BRANCH}/${VAULT_ENV}" }}
+          {{- range $k, $v := .Data.data }}
+          {{ $k }}={{ $v }}{{ end -}}
+          {{- end  }}
+
   - apiVersion: v1
     kind: ImageStream
     spec:
