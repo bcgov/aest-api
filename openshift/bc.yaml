@@ -9,6 +9,7 @@ objects:
   - apiVersion: v1
     kind: BuildConfig
     spec:
+      serviceAccountName: ${LICENSE_PLATE}-vault
       failedBuildsHistoryLimit: 5
       nodeSelector: null
       output:
