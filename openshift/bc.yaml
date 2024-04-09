@@ -118,3 +118,5 @@ parameters:
     required: false
   - name: API_ENV
     required: true
+  - name: SUB_DOMAIN
+    required: false

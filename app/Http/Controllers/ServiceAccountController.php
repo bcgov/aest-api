@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
-use MongoDB\Driver\Exception\Exception;
 use Response;
 
 class ServiceAccountController extends Controller
@@ -16,11 +15,12 @@ class ServiceAccountController extends Controller
         $tableName = $request->input('table');
         $where = $request->input('q');
         $orderBy = $request->input('order');
+        $perPage = $request->input('per_page') ?? 100;
         $bindings = [];
-        // Base query with parameter placeholders
+        // base query
         $query = "SELECT * FROM " . env('DB_SCHEMA_NAME') . "." . strtolower($tableName);
 
-        // Add WHERE clause if provided
+        // add WHERE clause if provided
         if(isset($where)) {
             $q = explode("~", $where);
             if(sizeof($q) === 3) {
@@ -29,7 +29,7 @@ class ServiceAccountController extends Controller
             }
         }
 
-        // Add ORDER BY clause if provided
+        // add ORDER BY clause if provided
         if(isset($orderBy)) {
             $orderBy = explode("~", $orderBy);
             if(sizeof($orderBy) === 2) {
@@ -37,15 +37,14 @@ class ServiceAccountController extends Controller
             }
         }
 
-        // Execute the query with parameter bindings
+        // execute the query with parameter bindings
         try {
             $data = DB::select($query, $bindings);
         } catch (\Exception $exception) {
-            return response()->json(['status' => false, 'body' => $exception->errorInfo[0]], 200);
+            return response()->json(['status' => false, 'body' => $exception->errorInfo[0]]);
         }
 
         // Paginate the results
-        $perPage = 100; // Number of items per page
         $currentPage = $request->input('page', 1); // Current page, default is 1
         $pagedData = array_slice($data, ($currentPage - 1) * $perPage, $perPage);
 
@@ -54,7 +53,7 @@ class ServiceAccountController extends Controller
             $pagedData, count($data), $perPage, $currentPage
         );
 
-        return response()->json(['status' => true, 'body' => $paginatedData], 200);
+        return response()->json(['status' => true, 'body' => $paginatedData]);
     }
 
     public function fetchTables(Request $request)
@@ -63,7 +62,7 @@ class ServiceAccountController extends Controller
             $tables = DB::select("SELECT table_name FROM information_schema.tables
 WHERE table_type = 'BASE TABLE' AND table_schema='" . env('DB_SCHEMA_NAME') . "'");
         } catch (\Exception $exception) {
-            return response()->json(['status' => false, 'body' => $exception->errorInfo[0]], 200);
+            return response()->json(['status' => false, 'body' => $exception->errorInfo[0]]);
         }
 
         return Response::json(['status' => true, 'body' => $tables], 200);
@@ -76,7 +75,7 @@ WHERE table_type = 'BASE TABLE' AND table_schema='" . env('DB_SCHEMA_NAME') . "'
         try {
             $columns = Schema::getColumns(env('DB_SCHEMA_NAME') . "." .strtolower($tableName));
         } catch (\Exception $exception) {
-            return response()->json(['status' => false, 'body' => $exception->errorInfo[0]], 200);
+            return response()->json(['status' => false, 'body' => $exception->errorInfo[0]]);
         }
 
         return Response::json(['status' => true, 'body' => $columns], 200);
