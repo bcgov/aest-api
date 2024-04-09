@@ -1,5 +1,6 @@
 ## get values from Github actions yml file. under env
 export GIT_LOCAL_BRANCH?=$(shell git rev-parse --abbrev-ref HEAD)
+export NAME := $(or $(NAME), dev)
 export NAMESPACE := $(or $(NAMESPACE), 000000-dev)
 export APP_NAME := $(or $(PROJECT_NAME), aest-api)
 export BUILD_ID := $(or $(BUILD_ID), 1)
