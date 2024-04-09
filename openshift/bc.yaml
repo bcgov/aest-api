@@ -9,7 +9,6 @@ objects:
   - apiVersion: v1
     kind: BuildConfig
     spec:
-      serviceAccountName: ${LICENSE_PLATE}-vault
       failedBuildsHistoryLimit: 5
       nodeSelector: null
       output:
@@ -45,6 +44,22 @@ objects:
         build-branch: ${REPO_BRANCH}
       name: ${NAME}
       namespace: ${BUILD_NAMESPACE}
+
+  - apiVersion: v1
+    kind: ImageStream
+    spec:
+      serviceAccountName: ${LICENSE_PLATE}-vault
+      lookupPolicy:
+        local: false
+    metadata:
+      generation: 1
+      labels:
+        build: ${NAME}
+        buildconfig: ${NAME}
+        build-branch: ${REPO_BRANCH}
+        image-stream: ${NAME}
+        image-stream-tag: ${IMAGE_TAG}
+      name: ${NAME}
       annotations:
         vault.hashicorp.com/agent-inject: 'true'
         vault.hashicorp.com/agent-inject-token: 'true'
@@ -59,20 +74,6 @@ objects:
           {{ $k }}={{ $v }}{{ end -}}
           {{- end  }}
 
-  - apiVersion: v1
-    kind: ImageStream
-    spec:
-      lookupPolicy:
-        local: false
-    metadata:
-      generation: 1
-      labels:
-        build: ${NAME}
-        buildconfig: ${NAME}
-        build-branch: ${REPO_BRANCH}
-        image-stream: ${NAME}
-        image-stream-tag: ${IMAGE_TAG}
-      name: ${NAME}
 parameters:
   - name: NAME
     required: true
