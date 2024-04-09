@@ -37,6 +37,13 @@ class ServiceAccountController extends Controller
             }
         }
 
+        // Pagination parameters
+        $currentPage = $request->input('page', 1); // Current page, default is 1
+        $offset = ($currentPage - 1) * $perPage;
+
+        // Append LIMIT and OFFSET to the query
+        $query .= " LIMIT $perPage OFFSET $offset";
+
         // execute the query with parameter bindings
         try {
             $data = DB::select($query, $bindings);
@@ -44,13 +51,13 @@ class ServiceAccountController extends Controller
             return response()->json(['status' => false, 'body' => $exception->errorInfo[0]]);
         }
 
-        // Paginate the results
-        $currentPage = $request->input('page', 1); // Current page, default is 1
-        $pagedData = array_slice($data, ($currentPage - 1) * $perPage, $perPage);
+        // Fetch total count for pagination
+        $totalCountQuery = "SELECT COUNT(*) AS total FROM " . env('DB_SCHEMA_NAME') . "." . strtolower($tableName);
+        $totalCount = DB::selectOne($totalCountQuery);
 
         // Create pagination object
         $paginatedData = new LengthAwarePaginator(
-            $pagedData, count($data), $perPage, $currentPage
+            $data, $totalCount->total, $perPage, $currentPage
         );
 
         return response()->json(['status' => true, 'body' => $paginatedData]);
