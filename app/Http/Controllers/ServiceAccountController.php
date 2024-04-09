@@ -14,12 +14,11 @@ class ServiceAccountController extends Controller
     public function fetchData(Request $request)
     {
         $tableName = $request->input('table');
-        $app = $request->input('app');
         $where = $request->input('q');
         $orderBy = $request->input('order');
         $bindings = [];
         // Base query with parameter placeholders
-        $query = "SELECT * FROM " . strtolower($tableName);
+        $query = "SELECT * FROM " . env('DB_SCHEMA_NAME') . "." . strtolower($tableName);
 
         // Add WHERE clause if provided
         if(isset($where)) {
@@ -75,7 +74,7 @@ WHERE table_type = 'BASE TABLE' AND table_schema='" . env('DB_SCHEMA_NAME') . "'
         $tableName = $request->input('table');
 
         try {
-            $columns = Schema::getColumns(strtolower($tableName));
+            $columns = Schema::getColumns(env('DB_SCHEMA_NAME') . "." .strtolower($tableName));
         } catch (\Exception $exception) {
             return response()->json(['status' => false, 'body' => $exception->errorInfo[0]], 200);
         }
