@@ -5,6 +5,7 @@ ARG TZ=America/Vancouver
 ARG CA_HOSTS_LIST
 ARG USER_ID
 ARG DEBIAN_FRONTEND=noninteractive
+ARG ENV_ARG
 
 # set entrypoint variables
 ENV USER_NAME=${USER_ID}
@@ -104,7 +105,6 @@ WORKDIR /
 COPY openshift/apache-oc/image-files/ /
 COPY openshift/apache-oc/image-files/etc/apache2/sites-available/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 
-RUN touch .env && cp -rf /vault/secrets/secrets.env /var/www/html/.env
 
 EXPOSE 8080 8443 2525
 RUN sed -i -e 's/80/8080/g' -e 's/443/8443/g' -e 's/25/2525/g' /etc/apache2/ports.conf \
@@ -135,6 +135,7 @@ COPY entrypoint.sh /sbin/entrypoint.sh
 COPY / /var/www/html/
 
 WORKDIR /var/www/html/
+RUN touch .env && echo ${ENV_ARG} >> /var/www/html/.env
 
 RUN mkdir -p storage && mkdir -p bootstrap/cache && chmod -R ug+rwx storage bootstrap/cache \
     && cd /var/www && chown -R ${USER_ID}:root html && chmod -R ug+rw html \
