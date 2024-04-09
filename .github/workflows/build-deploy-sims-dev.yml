@@ -2,7 +2,7 @@ name: Build and Deploy API in TEST
 
 on:
   pull_request:
-    branches: [ usp_dev ]
+    branches: [ sims_dev ]
     types: [ closed ]
 jobs:
   # Print variables for logging and debugging purposes
