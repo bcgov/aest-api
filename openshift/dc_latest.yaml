@@ -99,7 +99,7 @@ objects:
   - apiVersion: route.openshift.io/v1
     kind: Route
     spec:
-      host: ${ROUTE_SUFFIX}${DEPLOY_NAMESPACE}.apps.silver.devops.gov.bc.ca
+      host: ${SUB_DOMAIN}${DEPLOY_NAMESPACE}.apps.silver.devops.gov.bc.ca
       port:
         targetPort: 8080-tcp
       to:
@@ -185,4 +185,4 @@ parameters:
   - name: API_ENV
     required: false
   - name: SUB_DOMAIN
-    required: true
+    required: false
