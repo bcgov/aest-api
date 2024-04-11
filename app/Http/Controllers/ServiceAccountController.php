@@ -15,7 +15,7 @@ class ServiceAccountController extends Controller
         $tableName = $request->input('table');
         $where = $request->input('q');
         $orderBy = $request->input('order');
-        $perPage = $request->input('per_page') ?? 100;
+        $perPage = $request->input('per_page') ?? 5000;
         $bindings = [];
         // base query
         $query = "SELECT * FROM " . env('DB_SCHEMA_NAME') . "." . strtolower($tableName);
