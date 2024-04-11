@@ -1,4 +1,4 @@
-name: Build and Deploy API in TEST
+name: Build and Deploy API in SIMS DEV
 
 on:
   pull_request:
