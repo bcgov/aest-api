@@ -108,7 +108,8 @@ WHERE table_type = 'BASE TABLE' AND table_schema='" . env('DB_SCHEMA_NAME') . "'
                     $columnName = $column['name'];
 
                     // convert the value to a string before encoding it
-                    $row->{$columnName} = base64_encode((string)$row->{$columnName});
+                    $txt = stream_get_contents($row->{$columnName});
+                    $row->{$columnName} = base64_encode($txt);
                 }
             }
         }
