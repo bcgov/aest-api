@@ -16,18 +16,12 @@ class ServiceAccountController extends Controller
         $where = $request->input('q');
         $orderBy = $request->input('order');
         $perPage = $request->input('per_page') ?? 5000;
-        $bindings = [];
+
         // base query
-//        $query = "SELECT * FROM " . env('DB_SCHEMA_NAME') . "." . strtolower($tableName);
         $query = DB::table(env('DB_SCHEMA_NAME') . "." . strtolower($tableName));
 
         // add WHERE clause if provided
         if(isset($where)) {
-//            $q = explode("~", $where);
-//            if(sizeof($q) === 3) {
-//                $query .= " WHERE {$q[0]} {$q[1]} ?";
-//                $bindings[] = $q[2];
-//            }
 
             foreach ($where as $condition) {
                 // Extract the column name, operator, and value from the condition
@@ -48,20 +42,18 @@ class ServiceAccountController extends Controller
             }
         }
 
-        // Pagination parameters
+        // pagination parameters
         $currentPage = $request->input('page', 1); // Current page, default is 1
         $offset = ($currentPage - 1) * $perPage;
 
-        // Append LIMIT and OFFSET to the query
-//        $query .= " LIMIT $perPage OFFSET $offset";
+        // append LIMIT and OFFSET to the query
         $query->limit($perPage)->offset($offset);
 
         // execute the query with parameter bindings
         try {
-//            $data = DB::select($query, $bindings);
             $data = $query->get();
         } catch (\Exception $exception) {
-            return response()->json(['status' => false, 'body' => $exception->errorInfo]);
+            return response()->json(['status' => false, 'body' => $exception->errorInfo[0]]);
         }
 
         // Fetch total count for pagination
