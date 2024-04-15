@@ -22,12 +22,17 @@ class ServiceAccountController extends Controller
 
         // add WHERE clause if provided
         if(isset($where)) {
-
             foreach ($where as $condition) {
                 // Extract the column name, operator, and value from the condition
                 $columnName = $condition['column'];
                 $operator = $condition['operator'];
                 $value = $condition['value'];
+
+                // Check if the column is of type bytea
+                if ($this->isByteaColumn($columnName)) {
+                    // Convert the bytea value to a base64-encoded string
+                    $value = base64_encode($value);
+                }
 
                 // Add the where condition to the query
                 $query->where($columnName, $operator, $value);
@@ -91,5 +96,13 @@ WHERE table_type = 'BASE TABLE' AND table_schema='" . env('DB_SCHEMA_NAME') . "'
         }
 
         return Response::json(['status' => true, 'body' => $columns], 200);
+    }
+
+    private function isByteaColumn($columnName)
+    {
+        // Implement your logic to determine if the column is of type bytea
+        // You can query the PostgreSQL information schema or inspect the column metadata
+        // For simplicity, let's assume all columns named 'bytea_column' are of type bytea
+        return $columnName === 'bytea_column';
     }
 }
