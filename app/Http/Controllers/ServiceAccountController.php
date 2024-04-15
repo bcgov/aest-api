@@ -16,6 +16,7 @@ class ServiceAccountController extends Controller
         $where = $request->input('q');
         $orderBy = $request->input('order');
         $perPage = $request->input('per_page') ?? 5000;
+//        $columnInfo = $this->fetchColumns($request);
 
         // base query
         $query = DB::table(env('DB_SCHEMA_NAME') . "." . strtolower($tableName));
@@ -27,12 +28,6 @@ class ServiceAccountController extends Controller
                 $columnName = $condition['column'];
                 $operator = $condition['operator'];
                 $value = $condition['value'];
-
-                // Check if the column is of type bytea
-                if ($this->isByteaColumn($columnName)) {
-                    // Convert the bytea value to a base64-encoded string
-                    $value = base64_encode($value);
-                }
 
                 // Add the where condition to the query
                 $query->where($columnName, $operator, $value);
@@ -60,6 +55,9 @@ class ServiceAccountController extends Controller
         } catch (\Exception $exception) {
             return response()->json(['status' => false, 'body' => $exception->errorInfo[0]]);
         }
+
+        // Convert bytea column values
+        $data = $this->convertByteaColumns($data, $tableName);
 
         // Fetch total count for pagination
         $totalCountQuery = "SELECT COUNT(*) AS total FROM " . env('DB_SCHEMA_NAME') . "." . strtolower($tableName);
@@ -98,11 +96,22 @@ WHERE table_type = 'BASE TABLE' AND table_schema='" . env('DB_SCHEMA_NAME') . "'
         return Response::json(['status' => true, 'body' => $columns], 200);
     }
 
-    private function isByteaColumn($columnName)
+    // bytea in pg needs to be converted to a string
+    private function convertByteaColumns($data, $tableName)
     {
-        // Implement your logic to determine if the column is of type bytea
-        // You can query the PostgreSQL information schema or inspect the column metadata
-        // For simplicity, let's assume all columns named 'bytea_column' are of type bytea
-        return $columnName === 'bytea_column';
+        $columnInfo = Schema::getColumns(env('DB_SCHEMA_NAME') . "." .strtolower($tableName));
+        // convert bytea column values to a suitable format for JSON serialization
+        foreach ($data as $row) {
+            foreach ($columnInfo as $column) {
+                if ($column['type_name'] === 'bytea') {
+                    // convert bytea value to base64-encoded string
+                    $columnName = $column['name'];
+
+                    // convert the value to a string before encoding it
+                    $row->{$columnName} = base64_encode((string)$row->{$columnName});
+                }
+            }
+        }
+        return $data;
     }
 }
