@@ -18,14 +18,25 @@ class ServiceAccountController extends Controller
         $perPage = $request->input('per_page') ?? 5000;
         $bindings = [];
         // base query
-        $query = "SELECT * FROM " . env('DB_SCHEMA_NAME') . "." . strtolower($tableName);
+//        $query = "SELECT * FROM " . env('DB_SCHEMA_NAME') . "." . strtolower($tableName);
+        $query = DB::table(env('DB_SCHEMA_NAME') . "." . strtolower($tableName));
 
         // add WHERE clause if provided
         if(isset($where)) {
-            $q = explode("~", $where);
-            if(sizeof($q) === 3) {
-                $query .= " WHERE {$q[0]} {$q[1]} ?";
-                $bindings[] = $q[2];
+//            $q = explode("~", $where);
+//            if(sizeof($q) === 3) {
+//                $query .= " WHERE {$q[0]} {$q[1]} ?";
+//                $bindings[] = $q[2];
+//            }
+
+            foreach ($where as $condition) {
+                // Extract the column name, operator, and value from the condition
+                $columnName = $condition['column'];
+                $operator = $condition['operator'];
+                $value = $condition['value'];
+
+                // Add the where condition to the query
+                $query->where($columnName, $operator, $value);
             }
         }
 
@@ -33,7 +44,7 @@ class ServiceAccountController extends Controller
         if(isset($orderBy)) {
             $orderBy = explode("~", $orderBy);
             if(sizeof($orderBy) === 2) {
-                $query .= " ORDER BY {$orderBy[0]} {$orderBy[1]}";
+                $query->orderBy($orderBy[0], $orderBy[1]);
             }
         }
 
@@ -42,13 +53,15 @@ class ServiceAccountController extends Controller
         $offset = ($currentPage - 1) * $perPage;
 
         // Append LIMIT and OFFSET to the query
-        $query .= " LIMIT $perPage OFFSET $offset";
+//        $query .= " LIMIT $perPage OFFSET $offset";
+        $query->limit($perPage)->offset($offset);
 
         // execute the query with parameter bindings
         try {
-            $data = DB::select($query, $bindings);
+//            $data = DB::select($query, $bindings);
+            $data = $query->get();
         } catch (\Exception $exception) {
-            return response()->json(['status' => false, 'body' => $exception->errorInfo[0]]);
+            return response()->json(['status' => false, 'body' => $exception->errorInfo]);
         }
 
         // Fetch total count for pagination
