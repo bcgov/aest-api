@@ -16,13 +16,13 @@ class ServiceAccountController extends Controller
         $where = $request->input('q');
         $orderBy = $request->input('order');
         $perPage = $request->input('per_page') ?? 5000;
+//        $columnInfo = $this->fetchColumns($request);
 
         // base query
         $query = DB::table(env('DB_SCHEMA_NAME') . "." . strtolower($tableName));
 
         // add WHERE clause if provided
         if(isset($where)) {
-
             foreach ($where as $condition) {
                 // Extract the column name, operator, and value from the condition
                 $columnName = $condition['column'];
@@ -55,6 +55,9 @@ class ServiceAccountController extends Controller
         } catch (\Exception $exception) {
             return response()->json(['status' => false, 'body' => $exception->errorInfo[0]]);
         }
+
+        // Convert bytea column values
+        $data = $this->convertByteaColumns($data, $tableName);
 
         // Fetch total count for pagination
         $totalCountQuery = "SELECT COUNT(*) AS total FROM " . env('DB_SCHEMA_NAME') . "." . strtolower($tableName);
@@ -91,5 +94,24 @@ WHERE table_type = 'BASE TABLE' AND table_schema='" . env('DB_SCHEMA_NAME') . "'
         }
 
         return Response::json(['status' => true, 'body' => $columns], 200);
+    }
+
+    // bytea in pg needs to be converted to a string
+    private function convertByteaColumns($data, $tableName)
+    {
+        $columnInfo = Schema::getColumns(env('DB_SCHEMA_NAME') . "." .strtolower($tableName));
+        // convert bytea column values to a suitable format for JSON serialization
+        foreach ($data as $row) {
+            foreach ($columnInfo as $column) {
+                if ($column['type_name'] === 'bytea') {
+                    // convert bytea value to base64-encoded string
+                    $columnName = $column['name'];
+
+                    // convert the value to a string before encoding it
+                    $row->{$columnName} = base64_encode((string)$row->{$columnName});
+                }
+            }
+        }
+        return $data;
     }
 }
