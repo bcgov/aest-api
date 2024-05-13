@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Response;
 
 class ServiceAccountController extends Controller
@@ -16,13 +16,13 @@ class ServiceAccountController extends Controller
         $where = $request->input('q');
         $orderBy = $request->input('order');
         $perPage = $request->input('per_page') ?? 5000;
-//        $columnInfo = $this->fetchColumns($request);
+        //        $columnInfo = $this->fetchColumns($request);
 
         // base query
-        $query = DB::table(env('DB_SCHEMA_NAME') . "." . strtolower($tableName));
+        $query = DB::table(env('DB_SCHEMA_NAME').'.'.strtolower($tableName));
 
         // add WHERE clause if provided
-        if(isset($where)) {
+        if (isset($where)) {
             foreach ($where as $condition) {
                 // Extract the column name, operator, and value from the condition
                 $columnName = $condition['column'];
@@ -35,9 +35,9 @@ class ServiceAccountController extends Controller
         }
 
         // add ORDER BY clause if provided
-        if(isset($orderBy)) {
-            $orderBy = explode("~", $orderBy);
-            if(sizeof($orderBy) === 2) {
+        if (isset($orderBy)) {
+            $orderBy = explode('~', $orderBy);
+            if (count($orderBy) === 2) {
                 $query->orderBy($orderBy[0], $orderBy[1]);
             }
         }
@@ -60,7 +60,7 @@ class ServiceAccountController extends Controller
         $data = $this->convertByteaColumns($data, $tableName);
 
         // Fetch total count for pagination
-        $totalCountQuery = "SELECT COUNT(*) AS total FROM " . env('DB_SCHEMA_NAME') . "." . strtolower($tableName);
+        $totalCountQuery = 'SELECT COUNT(*) AS total FROM '.env('DB_SCHEMA_NAME').'.'.strtolower($tableName);
         $totalCount = DB::selectOne($totalCountQuery);
 
         // Create pagination object
@@ -75,7 +75,7 @@ class ServiceAccountController extends Controller
     {
         try {
             $tables = DB::select("SELECT table_name FROM information_schema.tables
-WHERE table_type = 'BASE TABLE' AND table_schema='" . env('DB_SCHEMA_NAME') . "'");
+WHERE table_type = 'BASE TABLE' AND table_schema='".env('DB_SCHEMA_NAME')."'");
         } catch (\Exception $exception) {
             return response()->json(['status' => false, 'body' => $exception->errorInfo[0]]);
         }
@@ -88,7 +88,7 @@ WHERE table_type = 'BASE TABLE' AND table_schema='" . env('DB_SCHEMA_NAME') . "'
         $tableName = $request->input('table');
 
         try {
-            $columns = Schema::getColumns(env('DB_SCHEMA_NAME') . "." .strtolower($tableName));
+            $columns = Schema::getColumns(env('DB_SCHEMA_NAME').'.'.strtolower($tableName));
         } catch (\Exception $exception) {
             return response()->json(['status' => false, 'body' => $exception->errorInfo[0]]);
         }
@@ -99,7 +99,7 @@ WHERE table_type = 'BASE TABLE' AND table_schema='" . env('DB_SCHEMA_NAME') . "'
     // bytea in pg needs to be converted to a string
     private function convertByteaColumns($data, $tableName)
     {
-        $columnInfo = Schema::getColumns(env('DB_SCHEMA_NAME') . "." .strtolower($tableName));
+        $columnInfo = Schema::getColumns(env('DB_SCHEMA_NAME').'.'.strtolower($tableName));
         // convert bytea column values to a suitable format for JSON serialization
         foreach ($data as $row) {
             foreach ($columnInfo as $column) {
@@ -113,6 +113,7 @@ WHERE table_type = 'BASE TABLE' AND table_schema='" . env('DB_SCHEMA_NAME') . "'
                 }
             }
         }
+
         return $data;
     }
 }

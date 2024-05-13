@@ -8,9 +8,7 @@ use Closure;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Response;
 
 class ApiAuth
@@ -26,7 +24,7 @@ class ApiAuth
     {
 
         $token = request()->bearerToken();
-        if(is_null($token)){
+        if (is_null($token)) {
             return Response::json(['status' => false, 'error' => 'Missing token.'], 401);
         }
         $jwksUri = env('KEYCLOAK_CERT');
@@ -41,33 +39,33 @@ class ApiAuth
         }
 
         $wrappedPk = wordwrap($matchingKey['x5c'][0], 64, "\n", true);
-        $pk = "-----BEGIN CERTIFICATE-----\n" . $wrappedPk . "\n-----END CERTIFICATE-----";
+        $pk = "-----BEGIN CERTIFICATE-----\n".$wrappedPk."\n-----END CERTIFICATE-----";
 
         try {
             $decoded = JWT::decode($token, new Key($pk, 'RS256'));
         } catch (ExpiredException $e) {
             return Response::json(['status' => false, 'error' => 'Token has expired.'], 401);
         } catch (\Exception $e) {
-            return Response::json(['status' => false, 'error' => "An error occurred: " . $e->getMessage()], 401);
+            return Response::json(['status' => false, 'error' => 'An error occurred: '.$e->getMessage()], 401);
         }
 
-        if(is_null($decoded)) {
-            return Response::json(['status' => false, 'error' => "Invalid token."], 401);
-        }else{
+        if (is_null($decoded)) {
+            return Response::json(['status' => false, 'error' => 'Invalid token.'], 401);
+        } else {
             // Simple validation against env record
-            if($decoded->clientId === env('SERVICE_ACCOUNT')){
+            if ($decoded->clientId === env('SERVICE_ACCOUNT')) {
                 return $next($request);
             }
 
             // Validation against a user in our DB
-//            $user = ServiceAccount::where('client_id', $decoded->clientId)->first();
-//            if(!is_null($user)){
-//                if($user->active)
-//                    return $next($request);
-//            }
+            //            $user = ServiceAccount::where('client_id', $decoded->clientId)->first();
+            //            if(!is_null($user)){
+            //                if($user->active)
+            //                    return $next($request);
+            //            }
 
         }
 
-        return Response::json(['status' => false, 'error' => "Generic error."], 401);
+        return Response::json(['status' => false, 'error' => 'Generic error.'], 401);
     }
 }
