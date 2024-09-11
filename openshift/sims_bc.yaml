@@ -35,12 +35,6 @@ objects:
           env:
             - name: USER_ID
               value: ${OC_USER_ID}
-            - name: ENV_ARG
-              valueFrom:
-                secretKeyRef:
-                  name: ${API_ENV}
-                  key: ".env"
-
         type: Docker
       successfulBuildsHistoryLimit: 5
     metadata:

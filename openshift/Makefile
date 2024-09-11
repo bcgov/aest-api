@@ -6,6 +6,7 @@ export BUILD_REF := $(or $(BUILD_REF), $(GIT_LOCAL_BRANCH))
 export BUILD_NAMESPACE := $(or $(BUILD_NAMESPACE), 000000-tools)
 export DEPLOY_NAMESPACE := $(or $(DEPLOY_NAMESPACE), 000000-dev)
 export BC_NAME := $(or $(BC_NAME), aest-api)
+export BUILD_FILE := $(or $(BUILD_FILE), bc.yaml)
 export DEPLOY_FILE := $(or $(DEPLOY_FILE), dc_latest.yaml)
 export BUILD_TAG := $(or $(BUILD_TAG), latest)
 
@@ -46,7 +47,7 @@ build-api:
 	test -n "$(BUILD_REF)"
 	test -n "$(BUILD_NAMESPACE)"
 	@echo "+\n++ PROCESSING API\n+"
-	@oc -n $(BUILD_NAMESPACE) process -f bc.yaml --param-file=$(PARAM_FILE) | oc -n $(BUILD_NAMESPACE) apply -f -
+	@oc -n $(BUILD_NAMESPACE) process -f $(BUILD_FILE) --param-file=$(PARAM_FILE) | oc -n $(BUILD_NAMESPACE) apply -f -
 	@echo "+\n++ BUILDING API\n+"
 	@oc -n $(BUILD_NAMESPACE) start-build bc/$(BC_NAME) --wait
 	@echo "+\n++ FINISHED BUILDING API\n+"

@@ -27,7 +27,6 @@ objects:
       labels:
         deploymentconfig: ${NAME}
         app.kubernetes.io/part-of: ${LABEL_NAME}
-
     spec:
       triggers:
         - type: "ConfigChange"
@@ -94,27 +93,27 @@ objects:
                 - name: DBHOST
                   valueFrom:
                     secretKeyRef:
-                      name: usp-pguser-app-database-user
+                      name: simsdb-pguser-app-database-user
                       key: "host"
                 - name: DBNAME
                   valueFrom:
                     secretKeyRef:
-                      name: usp-pguser-app-database-user
+                      name: simsdb-pguser-app-database-user
                       key: "dbname"
                 - name: DBUSER
                   valueFrom:
                     secretKeyRef:
-                      name: usp-pguser-app-database-user
+                      name: simsdb-pguser-app-database-user
                       key: "user"
                 - name: DBPASS
                   valueFrom:
                     secretKeyRef:
-                      name: usp-pguser-app-database-user
+                      name: simsdb-pguser-app-database-user
                       key: "password"
                 - name: DBPORT
                   valueFrom:
                     secretKeyRef:
-                      name: usp-pguser-app-database-user
+                      name: simsdb-pguser-app-database-user
                       key: "port"
               livenessProbe:
                 exec:
@@ -130,7 +129,7 @@ objects:
   - apiVersion: route.openshift.io/v1
     kind: Route
     spec:
-      host: ${SUB_DOMAIN}${DEPLOY_NAMESPACE}.apps.silver.devops.gov.bc.ca
+      host: https://dev.sims.studentaidbc.ca/edwapi
       port:
         targetPort: 8080-tcp
       to:
