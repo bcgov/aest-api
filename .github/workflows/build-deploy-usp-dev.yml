@@ -29,6 +29,7 @@ jobs:
       BUILD_ID: ${{ github.event.number }}
       BUILD_REF: ${{ github.base_ref }}
       BUILD_NAMESPACE: fc0a26-tools
+      BUILD_FILE: bc.yaml
     steps:
       # Checkout the PR branch
       - name: Print env
@@ -63,6 +64,7 @@ jobs:
       BUILD_ID: ${{ github.event.number }}
       BUILD_REF: ${{ github.base_ref }}
       DEPLOY_NAMESPACE: fc0a26-dev
+      DEPLOY_FILE: dc_latest.yaml
     steps:
       - name: Print env
         run: |
