@@ -16,6 +16,13 @@ composer dump-auto
 
 chmod 766 /var/www/html/probe-check.sh
 
+echo "Add env data"
+echo $ENV_ARG >> /var/www/html/.env
+echo DB_HOST=$DBHOST >> /var/www/html/.env
+echo DB_PORT=$DBPORT >> /var/www/html/.env
+echo DB_DATABASE=$DBNAME >> /var/www/html/.env
+echo DB_USERNAME=$DBUSER >> /var/www/html/.env
+echo DB_PASSWORD=$DBPASS >> /var/www/html/.env
 
 echo "Starting apache:"
 /usr/sbin/apache2ctl start

@@ -135,7 +135,8 @@ COPY entrypoint.sh /sbin/entrypoint.sh
 COPY / /var/www/html/
 
 WORKDIR /var/www/html/
-RUN touch .env && echo ${ENV_ARG} >> /var/www/html/.env
+#RUN touch .env && echo ${ENV_ARG} >> /var/www/html/.env
+RUN touch .env
 
 RUN mkdir -p storage && mkdir -p bootstrap/cache && chmod -R ug+rwx storage bootstrap/cache \
     && cd /var/www && chown -R ${USER_ID}:root html && chmod -R ug+rw html \
