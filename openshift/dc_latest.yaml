@@ -14,18 +14,18 @@ objects:
           protocol: TCP
           targetPort: 8443
       selector:
-        deploymentconfig: ${NAME}
+        deploymentconfig: ${BC_NAME}
       sessionAffinity: None
     metadata:
-      name: ${NAME}
+      name: ${BC_NAME}
       labels:
-        deploymentconfig: ${NAME}
+        deploymentconfig: ${BC_NAME}
   - apiVersion: apps.openshift.io/v1
     kind: DeploymentConfig
     metadata:
-      name: ${NAME}
+      name: ${BC_NAME}
       labels:
-        deploymentconfig: ${NAME}
+        deploymentconfig: ${BC_NAME}
         app.kubernetes.io/part-of: ${LABEL_NAME}
 
     spec:
@@ -36,20 +36,20 @@ objects:
             automatic: true
             from:
               kind: "ImageStreamTag"
-              name: ${NAME}:${IMAGE_TAG}
+              name: ${BC_NAME}:${IMAGE_TAG}
               namespace: ${BUILD_NAMESPACE}
             containerNames:
-              - ${NAME}
+              - ${BC_NAME}
       replicas: ${{MIN_REPLICAS}}
       revisionHistoryLimit: 2
       selector:
-        deploymentconfig: ${NAME}
+        deploymentconfig: ${BC_NAME}
       strategy:
         type: Rolling
       template:
         metadata:
           labels:
-            deploymentconfig: ${NAME}
+            deploymentconfig: ${BC_NAME}
             deploy-branch: ${REPO_BRANCH}
         spec:
           volumes:
@@ -58,12 +58,12 @@ objects:
                 name: subpath-env
           containers:
             - image: >-
-                image-registry.openshift-image-registry.svc:5000/${BUILD_NAMESPACE}/${NAME}
+                image-registry.openshift-image-registry.svc:5000/${BUILD_NAMESPACE}/${BC_NAME}
               volumeMounts:
                 - name: site-data-volume
                   mountPath: /var/site_data
               imagePullPolicy: Always
-              name: ${NAME}
+              name: ${BC_NAME}
               ports:
                 - containerPort: 8080
                   protocol: TCP
@@ -135,27 +135,27 @@ objects:
         targetPort: 8080-tcp
       to:
         kind: Service
-        name: ${NAME}
+        name: ${BC_NAME}
         weight: 100
       wildcardPolicy: None
       tls:
         termination: edge
         insecureEdgeTerminationPolicy: Redirect
     metadata:
-      name: ${NAME}
+      name: ${BC_NAME}
       labels:
-        deploymentconfig: ${NAME}
+        deploymentconfig: ${BC_NAME}
       annotations:
         haproxy.router.openshift.io/ip_whitelist: 142.22.0.0/12 142.32.0.0/12 142.35.0.0/12
 
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
-      name: ${NAME}-allow-external
+      name: ${BC_NAME}-allow-external
       spec:
         podSelector:
           matchLabels:
-            deploymentconfig: ${NAME}
+            deploymentconfig: ${BC_NAME}
         ingress:
           - ports:
             - protocol: TCP
