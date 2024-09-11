@@ -129,7 +129,8 @@ objects:
   - apiVersion: route.openshift.io/v1
     kind: Route
     spec:
-      host: https://dev.sims.studentaidbc.ca/edwapi
+      host: dev.sims.studentaidbc.ca
+      path: /edwapi/
       port:
         targetPort: 8080-tcp
       to:
