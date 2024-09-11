@@ -30,6 +30,7 @@ jobs:
       BUILD_REF: ${{ github.base_ref }}
       BUILD_NAMESPACE: 0c27fb-tools
       BUILD_FILE: sims_bc.yaml
+      BC_NAME: edw-api
     steps:
       # Checkout the PR branch
       - name: Print env
@@ -65,6 +66,7 @@ jobs:
       BUILD_REF: ${{ github.base_ref }}
       DEPLOY_NAMESPACE: 0c27fb-dev
       DEPLOY_FILE: sims_dc.yaml
+      BC_NAME: edw-api
     steps:
       - name: Print env
         run: |
