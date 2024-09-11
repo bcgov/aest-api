@@ -2,9 +2,9 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: ${NAME}
+  name: ${BC_NAME}
   labels:
-    buildconfig: ${NAME}
+    buildconfig: ${BC_NAME}
 objects:
   - apiVersion: v1
     kind: BuildConfig
@@ -14,7 +14,7 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: ${NAME}:${IMAGE_TAG}
+          name: ${BC_NAME}:${IMAGE_TAG}
       postCommit: {}
       resources:
         requests:
@@ -39,10 +39,10 @@ objects:
       successfulBuildsHistoryLimit: 5
     metadata:
       labels:
-        build: ${NAME}
-        buildconfig: ${NAME}
+        build: ${BC_NAME}
+        buildconfig: ${BC_NAME}
         build-branch: ${REPO_BRANCH}
-      name: ${NAME}
+      name: ${BC_NAME}
       namespace: ${BUILD_NAMESPACE}
 
   - apiVersion: v1
@@ -53,12 +53,12 @@ objects:
     metadata:
       generation: 1
       labels:
-        build: ${NAME}
-        buildconfig: ${NAME}
+        build: ${BC_NAME}
+        buildconfig: ${BC_NAME}
         build-branch: ${REPO_BRANCH}
-        image-stream: ${NAME}
+        image-stream: ${BC_NAME}
         image-stream-tag: ${IMAGE_TAG}
-      name: ${NAME}
+      name: ${BC_NAME}
 parameters:
   - name: NAME
     required: true
