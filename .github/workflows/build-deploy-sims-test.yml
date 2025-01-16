@@ -1,8 +1,8 @@
-name: Build and Deploy API in SIMS DEV
+name: Build and Deploy API in SIMS TEST
 
 on:
   pull_request:
-    branches: [ sims_dev ]
+    branches: [ sims_test ]
     types: [ closed ]
 jobs:
   # Print variables for logging and debugging purposes
@@ -69,7 +69,7 @@ jobs:
     env:
       BUILD_ID: ${{ github.event.number }}
       BUILD_REF: ${{ github.base_ref }}
-      DEPLOY_NAMESPACE: 0c27fb-dev
+      DEPLOY_NAMESPACE: 0c27fb-test
       DEPLOY_FILE: sims_dc.yaml
       BC_NAME: edw-api
     steps:
@@ -93,11 +93,11 @@ jobs:
         run: |
           oc login --token=${{ secrets.SIMS_API_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
       # Deploy the API.
-      - name: Deploy API DEV
+      - name: Deploy API TEST
         working-directory: "./openshift"
         run: |
           make oc-deploy-api
       - name: Finished OC Deploy from yaml
         run: |
-          echo "FINISHED OC Deploy DEV API"
+          echo "FINISHED OC Deploy TEST API"
           echo ++++++++++

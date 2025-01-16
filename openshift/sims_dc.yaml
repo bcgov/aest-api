@@ -93,27 +93,27 @@ objects:
                 - name: DBHOST
                   valueFrom:
                     secretKeyRef:
-                      name: simsdb-pguser-app-database-user
+                      name: simsdb-pguser-read-only-user
                       key: "host"
                 - name: DBNAME
                   valueFrom:
                     secretKeyRef:
-                      name: simsdb-pguser-app-database-user
+                      name: simsdb-pguser-read-only-user
                       key: "dbname"
                 - name: DBUSER
                   valueFrom:
                     secretKeyRef:
-                      name: simsdb-pguser-app-database-user
+                      name: simsdb-pguser-read-only-user
                       key: "user"
                 - name: DBPASS
                   valueFrom:
                     secretKeyRef:
-                      name: simsdb-pguser-app-database-user
+                      name: simsdb-pguser-read-only-user
                       key: "password"
                 - name: DBPORT
                   valueFrom:
                     secretKeyRef:
-                      name: simsdb-pguser-app-database-user
+                      name: simsdb-pguser-read-only-user
                       key: "port"
               livenessProbe:
                 exec:
@@ -129,7 +129,7 @@ objects:
   - apiVersion: route.openshift.io/v1
     kind: Route
     spec:
-      host: dev.sims.studentaidbc.ca
+      host: ${ROUTE_HOST}
       path: /edwapi/
       port:
         targetPort: 8080-tcp
@@ -219,3 +219,5 @@ parameters:
     required: false
   - name: BC_NAME
     required: false
+  - name: ROUTE_HOST
+    required: true

@@ -82,12 +82,10 @@ parameters:
     required: true
   - name: LICENSE_BRANCH
     required: true
-
   - name: LABEL_NAME
     required: false
   - name: NAMESPACE
     required: false
-
   - name: BUILD_CPU_REQUESTS
     required: true
   - name: BUILD_CPU_LIMITS
@@ -115,4 +113,6 @@ parameters:
   - name: SUB_DOMAIN
     required: false
   - name: BC_NAME
+    required: false
+  - name: ROUTE_HOST
     required: false
