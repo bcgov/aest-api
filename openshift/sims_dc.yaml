@@ -93,27 +93,27 @@ objects:
                 - name: DBHOST
                   valueFrom:
                     secretKeyRef:
-                      name: simsdb-pguser-app-database-user
+                      name: simsdb-pguser-read-only-user
                       key: "host"
                 - name: DBNAME
                   valueFrom:
                     secretKeyRef:
-                      name: simsdb-pguser-app-database-user
+                      name: simsdb-pguser-read-only-user
                       key: "dbname"
                 - name: DBUSER
                   valueFrom:
                     secretKeyRef:
-                      name: simsdb-pguser-app-database-user
+                      name: simsdb-pguser-read-only-user
                       key: "user"
                 - name: DBPASS
                   valueFrom:
                     secretKeyRef:
-                      name: simsdb-pguser-app-database-user
+                      name: simsdb-pguser-read-only-user
                       key: "password"
                 - name: DBPORT
                   valueFrom:
                     secretKeyRef:
-                      name: simsdb-pguser-app-database-user
+                      name: simsdb-pguser-read-only-user
                       key: "port"
               livenessProbe:
                 exec:

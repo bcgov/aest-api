@@ -14,7 +14,6 @@ php -r "echo date_default_timezone_get();"
 echo "Install composer"
 composer dump-auto
 
-chmod 766 /var/www/html/probe-check.sh
 
 echo "Add env data"
 printf "%s\n" "$ENV_ARG" >> /var/www/html/.env
