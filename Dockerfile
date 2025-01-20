@@ -151,11 +151,10 @@ RUN mkdir -p storage && mkdir -p bootstrap/cache && chmod -R ug+rwx storage boot
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
 #openshift will complaine about permission \
-    && chmod +x /sbin/entrypoint.sh
+    && chmod +x /sbin/entrypoint.sh && chmod 766 /var/www/html/probe-check.sh
+
 USER ${USER_ID}
 
-#rm -rf vendor
-#rm -f composer.lock
 #composer install
 RUN composer install
 
