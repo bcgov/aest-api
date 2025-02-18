@@ -115,17 +115,6 @@ objects:
                     secretKeyRef:
                       name: simsdb-pguser-read-only-user
                       key: "port"
-              livenessProbe:
-                exec:
-                  command:
-                  - /bin/sh
-                  - -c
-                  - /var/www/html/probe-check.sh
-                initialDelaySeconds: 1000
-                periodSeconds: 15
-                timeoutSeconds: 5
-                successThreshold: 1
-                failureThreshold: 3
   - apiVersion: route.openshift.io/v1
     kind: Route
     spec:
