@@ -31,7 +31,8 @@ objects:
       replicas: ${{MIN_REPLICAS}}
       revisionHistoryLimit: 2
       selector:
-        deployment: ${BC_NAME}
+        matchLabels:
+          deployment: ${BC_NAME}
       strategy:
         type: RollingUpdate
       template:
