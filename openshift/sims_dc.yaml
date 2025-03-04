@@ -28,17 +28,6 @@ objects:
         deployment: ${BC_NAME}
         app.kubernetes.io/part-of: ${LABEL_NAME}
     spec:
-      triggers:
-        - type: "ConfigChange"
-        - type: "ImageChange"
-          imageChangeParams:
-            automatic: true
-            from:
-              kind: "ImageStreamTag"
-              name: ${BC_NAME}:${IMAGE_TAG}
-              namespace: ${BUILD_NAMESPACE}
-            containerNames:
-              - ${BC_NAME}
       replicas: ${{MIN_REPLICAS}}
       revisionHistoryLimit: 2
       selector:
