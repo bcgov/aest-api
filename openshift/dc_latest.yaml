@@ -14,18 +14,18 @@ objects:
           protocol: TCP
           targetPort: 8443
       selector:
-        deploymentconfig: ${BC_NAME}
+        deployment: ${BC_NAME}
       sessionAffinity: None
     metadata:
       name: ${BC_NAME}
       labels:
-        deploymentconfig: ${BC_NAME}
+        deployment: ${BC_NAME}
   - apiVersion: apps.openshift.io/v1
-    kind: DeploymentConfig
+    kind: Deployment
     metadata:
       name: ${BC_NAME}
       labels:
-        deploymentconfig: ${BC_NAME}
+        deployment: ${BC_NAME}
         app.kubernetes.io/part-of: ${LABEL_NAME}
 
     spec:
@@ -43,13 +43,13 @@ objects:
       replicas: ${{MIN_REPLICAS}}
       revisionHistoryLimit: 2
       selector:
-        deploymentconfig: ${BC_NAME}
+        deployment: ${BC_NAME}
       strategy:
         type: Rolling
       template:
         metadata:
           labels:
-            deploymentconfig: ${BC_NAME}
+            deployment: ${BC_NAME}
             deploy-branch: ${REPO_BRANCH}
         spec:
           volumes:
@@ -144,7 +144,7 @@ objects:
     metadata:
       name: ${BC_NAME}
       labels:
-        deploymentconfig: ${BC_NAME}
+        deployment: ${BC_NAME}
       annotations:
         haproxy.router.openshift.io/ip_whitelist: 142.22.0.0/12 142.32.0.0/12 142.35.0.0/12
 
@@ -155,7 +155,7 @@ objects:
       spec:
         podSelector:
           matchLabels:
-            deploymentconfig: ${BC_NAME}
+            deployment: ${BC_NAME}
         ingress:
           - ports:
             - protocol: TCP
