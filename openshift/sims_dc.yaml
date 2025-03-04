@@ -131,20 +131,20 @@ objects:
     kind: NetworkPolicy
     metadata:
       name: ${BC_NAME}-allow-external
-      spec:
-        podSelector:
-          matchLabels:
-            deployment: ${BC_NAME}
-        ingress:
-          - ports:
+    spec:
+      podSelector:
+        matchLabels:
+          deployment: ${BC_NAME}
+      ingress:
+        - ports:
             - protocol: TCP
               port: 8080
             - protocol: TCP
               port: 80
             - protocol: TCP
               port: 443
-        policyTypes:
-          - Ingress
+      policyTypes:
+        - Ingress
 parameters:
   - name: OC_USER_ID
     required: false
