@@ -20,7 +20,7 @@ objects:
       name: ${BC_NAME}
       labels:
         deployment: ${BC_NAME}
-  - apiVersion: apps.openshift.io/v1
+  - apiVersion: apps/v1
     kind: Deployment
     metadata:
       name: ${BC_NAME}
@@ -158,12 +158,12 @@ objects:
             deployment: ${BC_NAME}
         ingress:
           - ports:
-            - protocol: TCP
-              port: 8080
-            - protocol: TCP
-              port: 80
-            - protocol: TCP
-              port: 443
+              - protocol: TCP
+                port: 8080
+              - protocol: TCP
+                port: 80
+              - protocol: TCP
+                port: 443
         policyTypes:
           - Ingress
 parameters:
