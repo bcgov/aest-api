@@ -20,7 +20,7 @@ objects:
       name: ${BC_NAME}
       labels:
         deployment: ${BC_NAME}
-  - apiVersion: apps.openshift.io/v1
+  - apiVersion: apps/v1
     kind: Deployment
     metadata:
       name: ${BC_NAME}
@@ -44,7 +44,7 @@ objects:
       selector:
         deployment: ${BC_NAME}
       strategy:
-        type: Rolling
+        type: RollingUpdate
       template:
         metadata:
           labels:
