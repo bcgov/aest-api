@@ -22,7 +22,7 @@ endef
 
 
 define rollout_and_wait
-@oc -n $(DEPLOY_NAMESPACE) rollout status $1
+@kubectl -n $(DEPLOY_NAMESPACE) rollout status $1
 endef
 
 oc-build-api: | print-status build-api
@@ -47,9 +47,9 @@ build-api:
 	test -n "$(BUILD_REF)"
 	test -n "$(BUILD_NAMESPACE)"
 	@echo "+\n++ PROCESSING API\n+"
-	@oc -n $(BUILD_NAMESPACE) process -f $(BUILD_FILE) --param-file=$(PARAM_FILE) | oc -n $(BUILD_NAMESPACE) apply -f -
+	@kubectl -n $(BUILD_NAMESPACE) apply -f $(BUILD_FILE)
 	@echo "+\n++ BUILDING API\n+"
-	@oc -n $(BUILD_NAMESPACE) start-build bc/$(BC_NAME) --wait
+	@kubectl -n $(BUILD_NAMESPACE) start-build $(BC_NAME) --wait
 	@echo "+\n++ FINISHED BUILDING API\n+"
 
 deploy-api:
@@ -57,6 +57,7 @@ deploy-api:
 	test -n "$(DEPLOY_NAMESPACE)"
 	test -n "$(BUILD_NAMESPACE)"
 	@echo "+\n++ Deploying API into $(DEPLOY_NAMESPACE)\n+"
-	@oc -n $(DEPLOY_NAMESPACE) process -f $(DEPLOY_FILE) --param-file=$(PARAM_FILE) | oc -n $(DEPLOY_NAMESPACE) apply -f -
-	$(call rollout_and_wait,dc/$(BC_NAME))
+	@kubectl -n $(DEPLOY_NAMESPACE) apply -f $(DEPLOY_FILE)
+	$(call rollout_and_wait,deployment/$(BC_NAME))
 	@echo "+\n++ FINISHED Deploying API\n+"
+
