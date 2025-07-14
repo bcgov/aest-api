@@ -10,66 +10,59 @@ use Response;
 
 class ServiceAccountController extends Controller
 {
+
     public function fetchData(Request $request)
     {
-        $tableName = $request->input('table');
-        $where = $request->input('q');
-        $orderBy = $request->input('order');
-        $perPage = $request->input('per_page') ?? 5000;
-        //        $columnInfo = $this->fetchColumns($request);
+        $schema    = env('DB_SCHEMA_NAME');
+        $table     = strtolower($request->input('table'));
+        $perPage   = $request->input('per_page', 5000);
+        $currentPage = $request->input('page', 1);
 
-        // base query
-        $query = DB::table(env('DB_SCHEMA_NAME').'.'.strtolower($tableName));
+        // 1) Build your base query
+        $query = DB::table("{$schema}.{$table}");
 
-        // add WHERE clause if provided
-        if (isset($where)) {
-            foreach ($where as $condition) {
-                // Extract the column name, operator, and value from the condition
-                $columnName = $condition['column'];
-                $operator = $condition['operator'];
-                $value = $condition['value'];
-
-                // Add the where condition to the query
-                $query->where($columnName, $operator, $value);
+        if ($request->filled('q')) {
+            foreach ($request->input('q') as $cond) {
+                $query->where($cond['column'], $cond['operator'], $cond['value']);
             }
         }
-
-        // add ORDER BY clause if provided
-        if (isset($orderBy)) {
-            $orderBy = explode('~', $orderBy);
-            if (count($orderBy) === 2) {
-                $query->orderBy($orderBy[0], $orderBy[1]);
-            }
+        if ($request->filled('order')) {
+            [$col, $dir] = explode('~', $request->input('order'));
+            $query->orderBy($col, $dir);
         }
 
-        // pagination parameters
-        $currentPage = $request->input('page', 1); // Current page, default is 1
-        $offset = ($currentPage - 1) * $perPage;
-
-        // append LIMIT and OFFSET to the query
-        $query->limit($perPage)->offset($offset);
-
-        // execute the query with parameter bindings
-        try {
-            $data = $query->get();
-        } catch (\Exception $exception) {
-            return response()->json(['status' => false, 'body' => $exception->errorInfo[0]]);
-        }
-
-        // Convert bytea column values
-        $data = $this->convertByteaColumns($data, $tableName);
-
-        // Fetch total count for pagination
-        $totalCountQuery = 'SELECT COUNT(*) AS total FROM '.env('DB_SCHEMA_NAME').'.'.strtolower($tableName);
-        $totalCount = DB::selectOne($totalCountQuery);
-
-        // Create pagination object
-        $paginatedData = new LengthAwarePaginator(
-            $data, $totalCount->total, $perPage, $currentPage
+        // 2) Paginate (no manual limit/offset!)
+        $paginator = $query->paginate(
+            $perPage,      // “per page”
+            ['*'],         // columns
+            'page',        // page‐param key
+            $currentPage   // the page number
         );
 
-        return response()->json(['status' => true, 'body' => $paginatedData]);
+        // 3) Convert any bytea columns
+        $byteas = collect(Schema::getColumns("{$schema}.{$table}"))
+            ->where('type_name','bytea')
+            ->pluck('name')
+            ->all();
+
+        $converted = $paginator->getCollection()->map(function($row) use ($byteas) {
+            foreach ($byteas as $col) {
+                if (isset($row->$col) && is_resource($row->$col)) {
+                    $row->$col = base64_encode(stream_get_contents($row->$col));
+                }
+            }
+            return $row;
+        });
+
+        $paginator->setCollection($converted);
+
+        // 4) Return the paginator—Laravel will include 'data' + all pagination meta
+        return response()->json([
+            'status' => true,
+            'body'   => $paginator
+        ]);
     }
+
 
     public function fetchTables(Request $request)
     {
