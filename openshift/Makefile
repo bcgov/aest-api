@@ -40,6 +40,8 @@ print-status:
 	@echo " | BUILD_ID:						$(BUILD_ID) |"
 	@echo " | BUILD_TAG:						$(BUILD_TAG) |"
 	@echo " | PARAM_FILE: 					$(PARAM_FILE) |"
+	@echo " | BUILD_FILE: 					$(BUILD_FILE) |"
+	@echo " | DEPLOY_FILE: 					$(DEPLOY_FILE) |"
 
 	@echo " +---------------------------------------------------------+ "
 
