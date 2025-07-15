@@ -40,6 +40,8 @@ print-status:
 	@echo " | BUILD_ID:						$(BUILD_ID) |"
 	@echo " | BUILD_TAG:						$(BUILD_TAG) |"
 	@echo " | PARAM_FILE: 					$(PARAM_FILE) |"
+	@echo " | BUILD_FILE: 					$(BUILD_FILE) |"
+	@echo " | DEPLOY_FILE: 					$(DEPLOY_FILE) |"
 
 	@echo " +---------------------------------------------------------+ "
 
@@ -58,5 +60,12 @@ deploy-api:
 	test -n "$(BUILD_NAMESPACE)"
 	@echo "+\n++ Deploying API into $(DEPLOY_NAMESPACE)\n+"
 	@oc -n $(DEPLOY_NAMESPACE) process -f $(DEPLOY_FILE) --param-file=$(PARAM_FILE) | oc -n $(DEPLOY_NAMESPACE) apply -f -
-	$(call rollout_and_wait,dc/$(BC_NAME))
+	@oc -n $(DEPLOY_NAMESPACE) rollout restart deployment/$(BC_NAME)
+	@oc -n $(DEPLOY_NAMESPACE) rollout status deployment/$(BC_NAME)
+
+#	@oc -n $(DEPLOY_NAMESPACE) process -f $(DEPLOY_FILE) --param-file=$(PARAM_FILE) | oc -n $(DEPLOY_NAMESPACE) apply -f -
+#	@oc -n $(DEPLOY_NAMESPACE) rollout restart deployment/$(BC_NAME)
+#	$(call rollout_and_wait,deployment/$(BC_NAME))
+#	@oc -n $(DEPLOY_NAMESPACE) process -f $(DEPLOY_FILE) --param-file=$(PARAM_FILE) | oc -n $(DEPLOY_NAMESPACE) apply -f -
+#	$(call rollout_and_wait,dc/$(BC_NAME))
 	@echo "+\n++ FINISHED Deploying API\n+"

@@ -14,41 +14,31 @@ objects:
           protocol: TCP
           targetPort: 8443
       selector:
-        deploymentconfig: ${BC_NAME}
+        deployment: ${BC_NAME}
       sessionAffinity: None
     metadata:
       name: ${BC_NAME}
       labels:
-        deploymentconfig: ${BC_NAME}
-  - apiVersion: apps.openshift.io/v1
-    kind: DeploymentConfig
+        deployment: ${BC_NAME}
+  - apiVersion: apps/v1
+    kind: Deployment
     metadata:
       name: ${BC_NAME}
       labels:
-        deploymentconfig: ${BC_NAME}
+        deployment: ${BC_NAME}
         app.kubernetes.io/part-of: ${LABEL_NAME}
     spec:
-      triggers:
-        - type: "ConfigChange"
-        - type: "ImageChange"
-          imageChangeParams:
-            automatic: true
-            from:
-              kind: "ImageStreamTag"
-              name: ${BC_NAME}:${IMAGE_TAG}
-              namespace: ${BUILD_NAMESPACE}
-            containerNames:
-              - ${BC_NAME}
       replicas: ${{MIN_REPLICAS}}
       revisionHistoryLimit: 2
       selector:
-        deploymentconfig: ${BC_NAME}
+        matchLabels:
+          deployment: ${BC_NAME}
       strategy:
-        type: Rolling
+        type: RollingUpdate
       template:
         metadata:
           labels:
-            deploymentconfig: ${BC_NAME}
+            deployment: ${BC_NAME}
             deploy-branch: ${REPO_BRANCH}
         spec:
           volumes:
@@ -133,7 +123,7 @@ objects:
     metadata:
       name: ${BC_NAME}
       labels:
-        deploymentconfig: ${BC_NAME}
+        deployment: ${BC_NAME}
       annotations:
         haproxy.router.openshift.io/ip_whitelist: 142.22.0.0/12 142.32.0.0/12 142.35.0.0/12
 
@@ -141,20 +131,20 @@ objects:
     kind: NetworkPolicy
     metadata:
       name: ${BC_NAME}-allow-external
-      spec:
-        podSelector:
-          matchLabels:
-            deploymentconfig: ${BC_NAME}
-        ingress:
-          - ports:
+    spec:
+      podSelector:
+        matchLabels:
+          deployment: ${BC_NAME}
+      ingress:
+        - ports:
             - protocol: TCP
               port: 8080
             - protocol: TCP
               port: 80
             - protocol: TCP
               port: 443
-        policyTypes:
-          - Ingress
+      policyTypes:
+        - Ingress
 parameters:
   - name: OC_USER_ID
     required: false
@@ -210,3 +200,5 @@ parameters:
     required: false
   - name: ROUTE_HOST
     required: true
+  - name: DEPLOY_FILE
+    required: false
