@@ -59,16 +59,9 @@ deploy-api:
 	test -n "$(DEPLOY_NAMESPACE)"
 	test -n "$(BUILD_NAMESPACE)"
 	@echo "+\n++ Deploying API into $(DEPLOY_NAMESPACE)\n+"
-	@oc -n $(DEPLOY_NAMESPACE) process \
-	    -f $(DEPLOY_FILE) \
-	    --param-file=$(PARAM_FILE) \
-	  | oc -n $(DEPLOY_NAMESPACE) apply -f - \
-	&& \
-	  # force a new rollout by restarting the Deployment
-	  @oc -n $(DEPLOY_NAMESPACE) rollout restart deployment/$(BC_NAME) \
-	&& \
-	  # wait for that restart to finish
-	  @oc -n $(DEPLOY_NAMESPACE) rollout status deployment/$(BC_NAME)
+	@oc -n $(DEPLOY_NAMESPACE) process -f $(DEPLOY_FILE) --param-file=$(PARAM_FILE) | oc -n $(DEPLOY_NAMESPACE) apply -f -
+	@oc -n $(DEPLOY_NAMESPACE) rollout restart deployment/$(BC_NAME)
+	@oc -n $(DEPLOY_NAMESPACE) rollout status deployment/$(BC_NAME)
 
 #	@oc -n $(DEPLOY_NAMESPACE) process -f $(DEPLOY_FILE) --param-file=$(PARAM_FILE) | oc -n $(DEPLOY_NAMESPACE) apply -f -
 #	@oc -n $(DEPLOY_NAMESPACE) rollout restart deployment/$(BC_NAME)
