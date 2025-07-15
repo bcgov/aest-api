@@ -200,3 +200,5 @@ parameters:
     required: false
   - name: ROUTE_HOST
     required: true
+  - name: DEPLOY_FILE
+    required: false
