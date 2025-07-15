@@ -69,6 +69,7 @@ jobs:
     env:
       BUILD_ID: ${{ github.event.number }}
       BUILD_REF: ${{ github.base_ref }}
+      BUILD_NAMESPACE: 0c27fb-tools
       DEPLOY_NAMESPACE: 0c27fb-dev
       DEPLOY_FILE: sims_dc.yaml
       BC_NAME: edw-api
