@@ -18,6 +18,19 @@ class ServiceAccountController extends Controller
         $perPage   = $request->input('per_page', 5000);
         $currentPage = $request->input('page', 1);
 
+        // 0) Validate table exists
+        $tableExists = (bool) DB::table('information_schema.tables')
+            ->where('table_schema', $schema)
+            ->where('table_name',  $table)
+            ->count();
+
+        if (! $tableExists) {
+            return response()->json([
+                'status' => false,
+                'body'   => "Table '{$schema}.{$table}' not found"
+            ], 404);
+        }
+
         // 1) Build your base query
         $query = DB::table("{$schema}.{$table}");
 
@@ -37,7 +50,10 @@ class ServiceAccountController extends Controller
             ['*'],         // columns
             'page',        // page‐param key
             $currentPage   // the page number
-        );
+        )
+        // force the base URL to “/”
+        ->withPath('/');
+
 
         // 3) Convert any bytea columns
         $byteas = collect(Schema::getColumns("{$schema}.{$table}"))
@@ -89,24 +105,4 @@ WHERE table_type = 'BASE TABLE' AND table_schema='".env('DB_SCHEMA_NAME')."'");
         return Response::json(['status' => true, 'body' => $columns], 200);
     }
 
-    // bytea in pg needs to be converted to a string
-    private function convertByteaColumns($data, $tableName)
-    {
-        $columnInfo = Schema::getColumns(env('DB_SCHEMA_NAME').'.'.strtolower($tableName));
-        // convert bytea column values to a suitable format for JSON serialization
-        foreach ($data as $row) {
-            foreach ($columnInfo as $column) {
-                if ($column['type_name'] === 'bytea') {
-                    // convert bytea value to base64-encoded string
-                    $columnName = $column['name'];
-
-                    // convert the value to a string before encoding it
-                    $txt = stream_get_contents($row->{$columnName});
-                    $row->{$columnName} = base64_encode($txt);
-                }
-            }
-        }
-
-        return $data;
-    }
 }
