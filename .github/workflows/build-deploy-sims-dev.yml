@@ -28,7 +28,7 @@ jobs:
     env:
       BUILD_ID: ${{ github.event.number }}
       BUILD_REF: ${{ github.base_ref }}
-      BUILD_NAMESPACE: 0c27fb-tools
+      BUILD_NAMESPACE: e0a504-tools
       BUILD_FILE: sims_bc.yaml
       DEPLOY_FILE: sims_dc.yaml
       BC_NAME: edw-api
@@ -51,7 +51,7 @@ jobs:
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
         run: |
-          oc login --token=${{ secrets.SIMS_API_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+          oc login --token=${{ secrets.SIMS_GOLD_API_SA_TOKEN }} --server=https://api.gold.devops.gov.bc.ca:6443
       - name: OC Build from yaml
         working-directory: "./openshift"
         run: |
@@ -70,8 +70,8 @@ jobs:
     env:
       BUILD_ID: ${{ github.event.number }}
       BUILD_REF: ${{ github.base_ref }}
-      BUILD_NAMESPACE: 0c27fb-tools
-      DEPLOY_NAMESPACE: 0c27fb-dev
+      BUILD_NAMESPACE: e0a504-tools
+      DEPLOY_NAMESPACE: e0a504-dev
       DEPLOY_FILE: sims_dc.yaml
       BC_NAME: edw-api
     steps:
