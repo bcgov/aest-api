@@ -93,7 +93,7 @@ jobs:
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
         run: |
-          oc login --token=${{ secrets.SIMS_API_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+          oc login --token=${{ secrets.SIMS_GOLD_API_SA_TOKEN }} --server=https://api.gold.devops.gov.bc.ca:6443
       # Deploy the API.
       - name: Deploy API DEV
         working-directory: "./openshift"
