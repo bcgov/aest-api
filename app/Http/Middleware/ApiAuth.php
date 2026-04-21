@@ -53,7 +53,7 @@ class ApiAuth
             return Response::json(['status' => false, 'error' => 'Invalid token.'], 401);
         } else {
             // Simple validation against env record
-            if ($decoded->clientId === env('SERVICE_ACCOUNT')) {
+            if ($decoded->aud === env('SERVICE_ACCOUNT')) {
                 return $next($request);
             }
 
