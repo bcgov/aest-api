@@ -40,8 +40,13 @@ class ServiceAccountController extends Controller
             }
         }
         if ($request->filled('order')) {
-            [$col, $dir] = explode('~', $request->input('order'));
-            $query->orderBy($col, $dir);
+            foreach (explode(',', $request->input('order')) as $orderItem) {
+                // trim whitespace
+                $orderItem = trim($orderItem);
+                if ($orderItem === '') continue; // skip empty items
+                [$col, $dir] = explode('~', $orderItem);
+                $query->orderBy($col, $dir);
+            }
         }
 
         // 2) Paginate (no manual limit/offset!)
