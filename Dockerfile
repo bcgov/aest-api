@@ -1,4 +1,4 @@
-FROM php:8.3.36-apache
+FROM php:8.5-apache
 ARG DEBIAN_VERSION=20.04
 ARG APACHE_OPENIDC_VERSION=2.4.10
 ARG TZ=America/Vancouver
@@ -50,7 +50,7 @@ RUN apt-get install -yq zlib1g-dev g++ libicu-dev libpq-dev git nano netcat-trad
     libaio-dev \
     && pecl install apcu \
     && docker-php-ext-enable apcu \
-    && docker-php-ext-install intl opcache\
+    && docker-php-ext-install intl\
     && docker-php-ext-configure zip \
     && docker-php-ext-install zip
 
